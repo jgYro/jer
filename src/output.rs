@@ -9,7 +9,7 @@ use crate::cursorcontroller::CursorController;
 use crate::editor_contents::EditorContents;
 
 pub struct Output {
-    win_size: (usize, usize),
+    pub win_size: (usize, usize),
     editor_contents: EditorContents,
     cursor_controller: CursorController,
 }

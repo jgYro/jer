@@ -35,6 +35,8 @@ impl CursorController {
                     self.cursor_x += 1
                 };
             }
+            'a' => self.cursor_x = 0,
+            'e' => self.cursor_x = self.screen_columns - 1,
             _ => unimplemented!(),
         }
     }

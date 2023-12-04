@@ -17,19 +17,25 @@ impl Editor {
 
     pub fn process_keypress(&mut self) -> Result<bool, std::io::Error> {
         match self.reader.read_key()? {
+            //Quit
             KeyEvent {
                 code: KeyCode::Char('q'),
                 modifiers: event::KeyModifiers::CONTROL,
                 kind: _,
                 state: _,
             } => return Ok(false),
+            //Basic Navigation controls
             KeyEvent {
                 code: KeyCode::Char(val),
                 modifiers: KeyModifiers::CONTROL,
                 kind: _,
                 state: _,
             } => match val {
-                'n' | 'p' | 'f' | 'b' => self.output.move_cursor(val),
+                'n' | 'p' | 'f' | 'b' | 'a' | 'e' => self.output.move_cursor(val),
+                'u' | 'd' => (0..self.output.win_size.1).for_each(|_| {
+                    self.output
+                        .move_cursor(if matches!(val, 'u') { 'p' } else { 'n' });
+                }),
                 _ => {}
             },
             _ => {}
