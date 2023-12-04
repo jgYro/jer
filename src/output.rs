@@ -22,7 +22,7 @@ impl Output {
         Self {
             win_size,
             editor_contents: EditorContents::new(),
-            cursor_controller: CursorController::new(),
+            cursor_controller: CursorController::new(win_size),
         }
     }
 
