@@ -34,7 +34,7 @@ impl Output {
 
     pub fn move_cursor(&mut self, direction: char) {
         self.cursor_controller
-            .move_cursor(direction, self.editor_rows.number_of_rows());
+            .move_cursor(direction, &self.editor_rows);
     }
 
     pub fn clear_screen() -> Result<(), std::io::Error> {
@@ -46,9 +46,8 @@ impl Output {
         let screen_rows = self.win_size.1;
         let screen_columns = self.win_size.0;
         for i in 0..screen_rows {
-            let file_row = i + self.cursor_controller.row_offset; // add line
+            let file_row = i + self.cursor_controller.row_offset;
             if file_row >= self.editor_rows.number_of_rows() {
-                //modify
                 if self.editor_rows.number_of_rows() == 0 && i == screen_rows / 3 {
                     let mut welcome = format!("Pound Editor --- Version {}", "Hello");
                     if welcome.len() > screen_columns {
@@ -65,9 +64,11 @@ impl Output {
                     self.editor_contents.push('~');
                 }
             } else {
-                let len = cmp::min(self.editor_rows.get_row(file_row).len(), screen_columns); //modify
-                self.editor_contents
-                    .push_str(&self.editor_rows.get_row(file_row)[..len]) //modify
+                let row = self.editor_rows.get_render(file_row);
+                let column_offset = self.cursor_controller.column_offset;
+                let len = cmp::min(row.len().saturating_sub(column_offset), screen_columns);
+                let start = if len == 0 { 0 } else { column_offset };
+                self.editor_contents.push_str(&row[start..start + len])
             }
             queue!(
                 self.editor_contents,
@@ -80,11 +81,10 @@ impl Output {
         }
     }
     pub fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
-        self.cursor_controller.scroll();
+        self.cursor_controller.scroll(&self.editor_rows);
         queue!(self.editor_contents, cursor::Hide, cursor::MoveTo(0, 0))?;
         self.draw_rows();
-        let cursor_x = self.cursor_controller.cursor_x;
-        //modify
+        let cursor_x = self.cursor_controller.cursor_x - self.cursor_controller.column_offset; //modify
         let cursor_y = self.cursor_controller.cursor_y - self.cursor_controller.row_offset;
         queue!(
             self.editor_contents,
