@@ -6,6 +6,7 @@ mod cleanup;
 mod cursorcontroller;
 mod editor;
 mod editor_contents;
+mod editor_rows;
 mod output;
 mod reader;
 
