@@ -15,8 +15,8 @@ use crate::editor_rows::EditorRows;
 pub struct Output {
     pub win_size: (usize, usize),
     editor_contents: EditorContents,
-    cursor_controller: CursorController,
-    editor_rows: EditorRows,
+    pub cursor_controller: CursorController,
+    pub editor_rows: EditorRows,
 }
 
 impl Output {

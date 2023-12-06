@@ -87,7 +87,11 @@ impl CursorController {
                 }
             }
             'a' => self.cursor_x = 0,
-            'e' => self.cursor_x = self.screen_columns - 1,
+            'e' => {
+                if self.cursor_y < number_of_rows {
+                    self.cursor_x = editor_rows.get_row(self.cursor_y).len();
+                }
+            }
             _ => unimplemented!(),
         }
         let row_len = if self.cursor_y < number_of_rows {

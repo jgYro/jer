@@ -1,3 +1,5 @@
+use std::cmp;
+
 use crossterm::event::{self, KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{output::Output, reader::Reader};
@@ -32,10 +34,21 @@ impl Editor {
                 state: _,
             } => match val {
                 'n' | 'p' | 'f' | 'b' | 'a' | 'e' => self.output.move_cursor(val),
-                'u' | 'd' => (0..self.output.win_size.1).for_each(|_| {
-                    self.output
-                        .move_cursor(if matches!(val, 'u') { 'p' } else { 'n' });
-                }),
+                'u' | 'd' => {
+                    if matches!(val, 'u') {
+                        self.output.cursor_controller.cursor_y =
+                            self.output.cursor_controller.row_offset
+                    } else {
+                        self.output.cursor_controller.cursor_y = cmp::min(
+                            self.output.win_size.1 + self.output.cursor_controller.row_offset - 1,
+                            self.output.editor_rows.number_of_rows(),
+                        );
+                    }
+                    (0..self.output.win_size.1).for_each(|_| {
+                        self.output
+                            .move_cursor(if matches!(val, 'u') { 'p' } else { 'n' });
+                    })
+                }
                 _ => {}
             },
             _ => {}

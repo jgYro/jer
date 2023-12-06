@@ -14,8 +14,10 @@ impl Row {
             render,
         }
     }
+    pub fn len(&self) -> usize {
+        self.row_content.len()
+    }
 }
-
 pub struct EditorRows {
     row_contents: Vec<Row>,
 }
@@ -77,5 +79,8 @@ impl EditorRows {
 
     pub fn get_editor_row(&self, at: usize) -> &Row {
         &self.row_contents[at]
+    }
+    pub fn get_row(&self, at: usize) -> &Row {
+        &self.row_contents[at] /* modify */
     }
 }
