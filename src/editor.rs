@@ -26,6 +26,12 @@ impl Editor {
                 kind: _,
                 state: _,
             } => return Ok(false),
+            KeyEvent {
+                code: KeyCode::Backspace,
+                modifiers: event::KeyModifiers::NONE,
+                kind: _,
+                state: _,
+            } => self.output.remove_char(),
             //Basic Navigation controls
             KeyEvent {
                 code: KeyCode::Char(val),

@@ -23,6 +23,11 @@ impl Row {
         self.row_content.insert(at, ch);
         EditorRows::render_row(self)
     }
+
+    pub fn remove_char(&mut self) {
+        self.row_content.pop();
+        EditorRows::render_row(self)
+    }
 }
 pub struct EditorRows {
     row_contents: Vec<Row>,
@@ -42,6 +47,10 @@ impl EditorRows {
 
     pub fn insert_row(&mut self) {
         self.row_contents.push(Row::default())
+    }
+
+    pub fn remove_row(&mut self) {
+        self.row_contents.pop();
     }
 
     pub fn get_editor_row_mut(&mut self, at: usize) -> &mut Row {

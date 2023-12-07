@@ -42,6 +42,22 @@ impl Output {
         self.cursor_controller.cursor_x += 1;
     }
 
+    pub fn remove_char(&mut self) {
+        if self.cursor_controller.cursor_x == 0 {
+            self.editor_rows.remove_row();
+            self.cursor_controller.cursor_y -= 1;
+            self.cursor_controller.cursor_x = self
+                .editor_rows
+                .get_editor_row(self.cursor_controller.cursor_y)
+                .len()
+        } else {
+            self.editor_rows
+                .get_editor_row_mut(self.cursor_controller.cursor_y)
+                .remove_char();
+            self.cursor_controller.cursor_x -= 1;
+        }
+    }
+
     pub fn move_cursor(&mut self, direction: char) {
         self.cursor_controller
             .move_cursor(direction, &self.editor_rows);
@@ -59,17 +75,12 @@ impl Output {
             let file_row = i + self.cursor_controller.row_offset;
             if file_row >= self.editor_rows.number_of_rows() {
                 if self.editor_rows.number_of_rows() == 0 && i == screen_rows / 3 {
-                    let mut welcome = format!("Pound Editor --- Version {}", "Hello");
-                    if welcome.len() > screen_columns {
-                        welcome.truncate(screen_columns)
-                    }
-                    let mut padding = (screen_columns - welcome.len()) / 2;
+                    let mut padding = screen_columns / 2;
                     if padding != 0 {
                         self.editor_contents.push('~');
                         padding -= 1
                     }
                     (0..padding).for_each(|_| self.editor_contents.push(' '));
-                    self.editor_contents.push_str(&welcome);
                 } else {
                     self.editor_contents.push('~');
                 }
