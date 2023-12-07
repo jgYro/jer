@@ -2,13 +2,14 @@ use std::{env, fs, path::Path}; // add imports
 
 pub const TAB_STOP: usize = 8;
 
+#[derive(Default)]
 pub struct Row {
-    pub row_content: Box<str>,
+    pub row_content: String,
     render: String,
 }
 
 impl Row {
-    fn new(row_content: Box<str>, render: String) -> Self {
+    fn new(row_content: String, render: String) -> Self {
         Self {
             row_content,
             render,
@@ -16,6 +17,11 @@ impl Row {
     }
     pub fn len(&self) -> usize {
         self.row_content.len()
+    }
+
+    pub fn insert_char(&mut self, at: usize, ch: char) {
+        self.row_content.insert(at, ch);
+        EditorRows::render_row(self)
     }
 }
 pub struct EditorRows {
@@ -32,6 +38,14 @@ impl EditorRows {
             },
             Some(file) => Self::from_file(file.as_ref()),
         }
+    }
+
+    pub fn insert_row(&mut self) {
+        self.row_contents.push(Row::default())
+    }
+
+    pub fn get_editor_row_mut(&mut self, at: usize) -> &mut Row {
+        &mut self.row_contents[at]
     }
 
     fn render_row(row: &mut Row) {

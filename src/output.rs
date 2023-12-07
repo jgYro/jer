@@ -32,6 +32,16 @@ impl Output {
         }
     }
 
+    pub fn insert_char(&mut self, ch: char) {
+        if self.cursor_controller.cursor_y == self.editor_rows.number_of_rows() {
+            self.editor_rows.insert_row()
+        }
+        self.editor_rows
+            .get_editor_row_mut(self.cursor_controller.cursor_y)
+            .insert_char(self.cursor_controller.cursor_x, ch);
+        self.cursor_controller.cursor_x += 1;
+    }
+
     pub fn move_cursor(&mut self, direction: char) {
         self.cursor_controller
             .move_cursor(direction, &self.editor_rows);
