@@ -1,4 +1,4 @@
-use std::{env, fs, path::Path}; // add imports
+use std::{env, fs, path::PathBuf}; // add imports
 
 pub const TAB_STOP: usize = 8;
 
@@ -31,6 +31,7 @@ impl Row {
 }
 pub struct EditorRows {
     row_contents: Vec<Row>,
+    pub filename: Option<PathBuf>,
 }
 
 impl EditorRows {
@@ -40,8 +41,9 @@ impl EditorRows {
         match arg.nth(1) {
             None => Self {
                 row_contents: Vec::new(),
+                filename: None,
             },
-            Some(file) => Self::from_file(file.as_ref()),
+            Some(file) => Self::from_file(file.into()),
         }
     }
 
@@ -78,9 +80,10 @@ impl EditorRows {
         });
     }
 
-    fn from_file(file: &Path) -> Self {
-        let file_contents = fs::read_to_string(file).expect("Unable to read file");
+    fn from_file(file: PathBuf) -> Self {
+        let file_contents = fs::read_to_string(&file).expect("Unable to read file");
         Self {
+            filename: Some(file),
             row_contents: file_contents
                 .lines()
                 .map(|it| {
