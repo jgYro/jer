@@ -43,18 +43,26 @@ impl Output {
     }
 
     pub fn remove_char(&mut self) {
-        if self.cursor_controller.cursor_x == 0 {
-            self.editor_rows.remove_row();
-            self.cursor_controller.cursor_y -= 1;
-            self.cursor_controller.cursor_x = self
-                .editor_rows
-                .get_editor_row(self.cursor_controller.cursor_y)
-                .len()
-        } else {
-            self.editor_rows
-                .get_editor_row_mut(self.cursor_controller.cursor_y)
-                .remove_char();
+        if self.cursor_controller.cursor_y == self.editor_rows.number_of_rows() {
+            return;
+        }
+        if self.cursor_controller.cursor_y == 0 && self.cursor_controller.cursor_x == 0 {
+            return;
+        }
+        let row = self
+            .editor_rows
+            .get_editor_row_mut(self.cursor_controller.cursor_y);
+        if self.cursor_controller.cursor_x > 0 {
+            row.remove_char(self.cursor_controller.cursor_x - 1);
             self.cursor_controller.cursor_x -= 1;
+        } else {
+            let previous_row_content = self
+                .editor_rows
+                .get_row(self.cursor_controller.cursor_y - 1);
+            self.cursor_controller.cursor_x = previous_row_content.len();
+            self.editor_rows
+                .join_adjacent_rows(self.cursor_controller.cursor_y);
+            self.cursor_controller.cursor_y -= 1;
         }
     }
 

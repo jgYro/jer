@@ -24,8 +24,8 @@ impl Row {
         EditorRows::render_row(self)
     }
 
-    pub fn remove_char(&mut self) {
-        self.row_content.pop();
+    pub fn remove_char(&mut self, at: usize) {
+        self.row_content.remove(at);
         EditorRows::render_row(self)
     }
 }
@@ -51,12 +51,15 @@ impl EditorRows {
         self.row_contents.push(Row::default())
     }
 
-    pub fn remove_row(&mut self) {
-        self.row_contents.pop();
-    }
-
     pub fn get_editor_row_mut(&mut self, at: usize) -> &mut Row {
         &mut self.row_contents[at]
+    }
+
+    pub fn join_adjacent_rows(&mut self, at: usize) {
+        let current_row = self.row_contents.remove(at);
+        let previous_row = self.get_editor_row_mut(at - 1);
+        previous_row.row_content.push_str(&current_row.row_content);
+        Self::render_row(previous_row);
     }
 
     fn render_row(row: &mut Row) {
