@@ -51,10 +51,11 @@ impl EditorRows {
         }
     }
 
-    pub fn insert_row(&mut self) {
-        self.row_contents.push(Row::default())
+    pub fn insert_row(&mut self, at: usize, contents: String) {
+        let mut new_row = Row::new(contents, String::new());
+        EditorRows::render_row(&mut new_row);
+        self.row_contents.insert(at, new_row);
     }
-
     pub fn get_editor_row_mut(&mut self, at: usize) -> &mut Row {
         &mut self.row_contents[at]
     }
@@ -83,7 +84,7 @@ impl EditorRows {
         }
     }
 
-    fn render_row(row: &mut Row) {
+    pub fn render_row(row: &mut Row) {
         let mut index = 0;
         let capacity = row
             .row_content

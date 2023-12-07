@@ -34,15 +34,38 @@ impl Output {
         }
     }
 
+    pub fn insert_newline(&mut self) {
+        if self.cursor_controller.cursor_x == 0 {
+            self.editor_rows
+                .insert_row(self.cursor_controller.cursor_y, String::new())
+        } else {
+            let current_row = self
+                .editor_rows
+                .get_editor_row_mut(self.cursor_controller.cursor_y);
+            let new_row_content = current_row.row_content[self.cursor_controller.cursor_x..].into();
+            current_row
+                .row_content
+                .truncate(self.cursor_controller.cursor_x);
+            EditorRows::render_row(current_row);
+            self.editor_rows
+                .insert_row(self.cursor_controller.cursor_y + 1, new_row_content);
+        }
+        self.cursor_controller.cursor_x = 0;
+        self.cursor_controller.cursor_y += 1;
+        self.dirty += 1;
+    }
+
     pub fn insert_char(&mut self, ch: char) {
         if self.cursor_controller.cursor_y == self.editor_rows.number_of_rows() {
-            self.editor_rows.insert_row()
+            self.editor_rows
+                .insert_row(self.editor_rows.number_of_rows(), String::new()); //modify
+            self.dirty += 1;
         }
         self.editor_rows
             .get_editor_row_mut(self.cursor_controller.cursor_y)
             .insert_char(self.cursor_controller.cursor_x, ch);
         self.cursor_controller.cursor_x += 1;
-        self.dirty += 1
+        self.dirty += 1;
     }
 
     pub fn remove_char(&mut self) {

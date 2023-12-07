@@ -32,6 +32,12 @@ impl Editor {
                 kind: _,
                 state: _,
             } => self.output.remove_char(),
+            KeyEvent {
+                code: KeyCode::Enter,
+                modifiers: event::KeyModifiers::NONE,
+                kind: _,
+                state: _,
+            } => self.output.insert_newline(),
             //Basic Navigation controls
             KeyEvent {
                 code: KeyCode::Char(val),
