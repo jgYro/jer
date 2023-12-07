@@ -40,6 +40,10 @@ impl Editor {
                 state: _,
             } => match val {
                 'n' | 'p' | 'f' | 'b' | 'a' | 'e' => self.output.move_cursor(val),
+                's' => {
+                    self.output.editor_rows.save()?;
+                    self.output.dirty = 0
+                }
                 'u' | 'd' => {
                     if matches!(val, 'u') {
                         self.output.cursor_controller.cursor_y =

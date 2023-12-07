@@ -17,6 +17,7 @@ pub struct Output {
     editor_contents: EditorContents,
     pub cursor_controller: CursorController,
     pub editor_rows: EditorRows,
+    pub dirty: u64,
 }
 
 impl Output {
@@ -29,6 +30,7 @@ impl Output {
             editor_contents: EditorContents::new(),
             cursor_controller: CursorController::new(win_size),
             editor_rows: EditorRows::new(),
+            dirty: 0,
         }
     }
 
@@ -40,6 +42,7 @@ impl Output {
             .get_editor_row_mut(self.cursor_controller.cursor_y)
             .insert_char(self.cursor_controller.cursor_x, ch);
         self.cursor_controller.cursor_x += 1;
+        self.dirty += 1
     }
 
     pub fn remove_char(&mut self) {
@@ -64,6 +67,7 @@ impl Output {
                 .join_adjacent_rows(self.cursor_controller.cursor_y);
             self.cursor_controller.cursor_y -= 1;
         }
+        self.dirty += 1
     }
 
     pub fn move_cursor(&mut self, direction: char) {
@@ -80,13 +84,14 @@ impl Output {
         self.editor_contents
             .push_str(&style::Attribute::Reverse.to_string());
         let info = format!(
-            "{} --X:{} | Y: {} -- {} lines",
+            "{} -- {} --X:{} | Y: {} -- {} lines",
             self.editor_rows
                 .filename
                 .as_ref()
                 .and_then(|path| path.file_name())
                 .and_then(|name| name.to_str())
                 .unwrap_or("[No Name]"),
+            if self.dirty > 0 { "(Modified)" } else { "" },
             self.cursor_controller.cursor_x,
             self.cursor_controller.cursor_y,
             self.editor_rows.number_of_rows()

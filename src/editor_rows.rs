@@ -1,4 +1,8 @@
-use std::{env, fs, path::PathBuf}; // add imports
+use std::{
+    env, fs,
+    io::{self, ErrorKind, Write},
+    path::PathBuf,
+}; // add imports
 
 pub const TAB_STOP: usize = 8;
 
@@ -60,6 +64,23 @@ impl EditorRows {
         let previous_row = self.get_editor_row_mut(at - 1);
         previous_row.row_content.push_str(&current_row.row_content);
         Self::render_row(previous_row);
+    }
+
+    pub fn save(&self) -> io::Result<()> {
+        match &self.filename {
+            None => Err(io::Error::new(ErrorKind::Other, "no file name specified")),
+            Some(name) => {
+                let mut file = fs::OpenOptions::new().write(true).create(true).open(name)?;
+                let contents: String = self
+                    .row_contents
+                    .iter()
+                    .map(|it| it.row_content.as_str())
+                    .collect::<Vec<&str>>()
+                    .join("\n");
+                file.set_len(contents.len() as u64)?;
+                file.write_all(contents.as_bytes())
+            }
+        }
     }
 
     fn render_row(row: &mut Row) {
