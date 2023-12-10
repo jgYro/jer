@@ -2,7 +2,7 @@ use std::{
     env, fs,
     io::{self, ErrorKind, Write},
     path::PathBuf,
-}; // add imports
+};
 
 pub const TAB_STOP: usize = 8;
 
@@ -21,6 +21,13 @@ impl Row {
     }
     pub fn len(&self) -> usize {
         self.row_content.len()
+    }
+
+    pub fn is_word(&self, at: usize) -> bool {
+        self.row_content
+            .chars()
+            .nth(at)
+            .map_or(false, |c| c.is_alphabetic())
     }
 
     pub fn insert_char(&mut self, at: usize, ch: char) {

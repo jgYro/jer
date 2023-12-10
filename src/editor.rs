@@ -19,7 +19,6 @@ impl Editor {
 
     pub fn process_keypress(&mut self) -> Result<bool, std::io::Error> {
         match self.reader.read_key()? {
-            //Quit
             KeyEvent {
                 code: KeyCode::Char('q'),
                 modifiers: event::KeyModifiers::CONTROL,
@@ -38,7 +37,23 @@ impl Editor {
                 kind: _,
                 state: _,
             } => self.output.insert_newline(),
-            //Basic Navigation controls
+            KeyEvent {
+                code: KeyCode::Char(val),
+                modifiers: event::KeyModifiers::ALT,
+                kind: _,
+                state: _,
+            } => match val {
+                'f' | 'b' => {
+                    println!(
+                        "{}",
+                        self.output
+                            .editor_rows
+                            .get_editor_row(self.output.cursor_controller.cursor_y)
+                            .is_word(self.output.cursor_controller.cursor_x)
+                    )
+                }
+                _ => {}
+            },
             KeyEvent {
                 code: KeyCode::Char(val),
                 modifiers: KeyModifiers::CONTROL,
